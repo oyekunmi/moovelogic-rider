@@ -1,14 +1,28 @@
 import React from 'react';
-import { ExpoConfigView } from '@expo/samples';
+import {
+  View,
+  AsyncStorage,
+  Text
+} from 'react-native';
+import { TouchableOpacity } from 'react-native-gesture-handler';
 
-export default function SettingsScreen() {
-  /**
-   * Go ahead and delete ExpoConfigView and replace it with your content;
-   * we just wanted to give you a quick view of your config.
-   */
-  return <ExpoConfigView />;
+export default function SettingsScreen(props) {
+
+  
+  _signOutAsync = async () => {
+    await AsyncStorage.clear();
+    props.navigation.navigate('Auth');
+  };
+  
+  return (
+    <View>
+      <TouchableOpacity onPress={_signOutAsync}>
+        <Text>Logout</Text>
+      </TouchableOpacity>
+    </View>
+  ) 
 }
 
 SettingsScreen.navigationOptions = {
-  title: 'app.json',
+  title: 'Profile',
 };
