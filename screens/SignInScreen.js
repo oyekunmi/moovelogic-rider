@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import {
-    AsyncStorage,
-    View,
-    Button,
-    StyleSheet,
-    Image,
     Text,
+    View,
+    Alert,
+    Image,
+    StyleSheet,
+    AsyncStorage,
 } from 'react-native';
 import AppInput from '../components/UI/AppInput';
 import AppButton from '../components/UI/AppButton';
+import agent from '../agent';
 
 export default function SignInScreen(props) {
     const [username, setUsername] = useState('');
@@ -16,9 +17,27 @@ export default function SignInScreen(props) {
     const [authenticating, setAuthenticating] = useState(false);
 
     _signInAsync = async () => {
-        await AsyncStorage.setItem('userToken', 'abc');
-        props.navigation.navigate('App');
+        setAuthenticating(true);
+        agent.Auth.login(username, password).then(x=>{
+            console.log(x);
+            const token = x.data.token.access_token;
+            AsyncStorage.setItem('jwt', token);
+            agent.setToken(token); 
+            props.navigation.navigate('App');
+        },
+        err => {
+            console.log(err);
+            setAuthenticating(false);
+            Alert.alert("Bad credential", "Invalid login credential, kindly contact support for help on info@app.com", [{text: 'OK'}]);
+        });
     };
+
+    _onChangeText = (key, value) => {
+        if (key == "username")
+            setUsername(value);
+        if (key == "password");
+        setPassword(value);
+    }
 
     return (
         <View style={styles.container}>
@@ -40,13 +59,13 @@ export default function SignInScreen(props) {
                 <AppInput
                     placeholder="User Name"
                     type='username'
-                    onChangeText={this.onChangeText}
+                    onChangeText={_onChangeText}
                     value={username}
                 />
                 <AppInput
                     placeholder="Password"
                     type='password'
-                    onChangeText={this.onChangeText}
+                    onChangeText={_onChangeText}
                     value={password}
                     secureTextEntry
                 />
@@ -93,7 +112,12 @@ const styles = StyleSheet.create({
     loginButton: {
         marginTop: 30,
     },
-
+    errorMessage: {
+        fontSize: 12,
+        marginTop: 10,
+        color: 'transparent',
+        // fontFamily: fonts.base
+    },
 });
 
 SignInScreen.navigationOptions = {
