@@ -35,8 +35,8 @@ export default function SignInScreen(props) {
     _onChangeText = (key, value) => {
         if (key == "username")
             setUsername(value);
-        if (key == "password");
-        setPassword(value);
+        if (key == "password")
+            setPassword(value);
     }
 
     return (
@@ -80,8 +80,6 @@ export default function SignInScreen(props) {
         </View>
     );
 }
-
-
 
 
 const styles = StyleSheet.create({

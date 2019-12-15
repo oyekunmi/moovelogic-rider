@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const http = axios.create({
-    baseURL: "https://moovelogic.herokuapp.com/api",
+    baseURL: "https://api-cashingames.herokuapp.com/api",
     // headers: {
     //   // 'Accept': 'application/json',
     //   // 'Authorization': `Bearer ${token}`,
@@ -36,8 +36,8 @@ const tokenPlugin = req => {
 const Auth = {
   current: () =>
     http.get('/v1/user/me'),
-  login: (phone_number, password) =>
-    http.post('/auth/login', { phone_number, password }),
+  login: (username, password) =>
+    http.post('/auth/login', { username, password }),
   register: data =>
     http.post('/auth/register', data),
   checkValidEmail: email =>
