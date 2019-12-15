@@ -1,4 +1,13 @@
-const API_ROOT = "https://moovelogic.herokuapp.com/api";
+import axios from 'axios';
+
+const http = axios.create({
+    baseURL: "https://moovelogic.herokuapp.com/api",
+    // headers: {
+    //   // 'Accept': 'application/json',
+    //   // 'Authorization': `Bearer ${token}`,
+    //   // 'X-Requested-With': 'XMLHttpRequest'
+    // },
+});
 
 let token = null;
 
@@ -13,41 +22,33 @@ const tokenPlugin = req => {
 
 }
 
-const requests = {
-  del: url =>
-    superagent.del(`${API_ROOT}${url}`).use(tokenPlugin).then(responseBody),
-  get: url =>
-    superagent.get(`${API_ROOT}${url}`).use(tokenPlugin).then(responseBody),
-  put: (url, body) =>
-    superagent.put(`${API_ROOT}${url}`, body).use(tokenPlugin).then(responseBody),
-  post: (url, body) =>
-    fetch(`${API_ROOT}${url}`, { 
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(body)
-    }
-    ).then(responseBody),
-};
+// const requests = {
+//   del: url =>
+//     superagent.del(`${url}`).use(tokenPlugin).then(responseBody),
+//   get: url =>
+//     superagent.get(`${url}`),
+//   put: (url, body) =>
+//     superagent.put(`${url}`, body).use(tokenPlugin).then(responseBody),
+//   post: (url, body) =>
+//     superagent.post(`${url}`, body)  
+// };
 
 const Auth = {
   current: () =>
-    requests.get('/v1/user/me'),
+    http.get('/v1/user/me'),
   login: (phone_number, password) =>
-    requests.post('/auth/login/', { phone_number, password }),
+    http.post('/auth/login', { phone_number, password }),
   register: data =>
-    requests.post('/auth/register', data),
+    http.post('/auth/register', data),
   checkValidEmail: email =>
-    requests.post(`/auth/email/is-valid`, { email }),
+    http.post(`/auth/email/is-valid`, { email }),
 }
 
 const Profile = {
   save: profile =>
-    requests.put('/v1/profile', { profile }),
+    http.put('/v1/profile', { profile }),
   load: () =>
-    requests.get('/v1/profile/me'),
+    http.get('/v1/profile/me'),
 }
 
 export default {
