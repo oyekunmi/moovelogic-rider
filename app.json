@@ -3,7 +3,7 @@
     "name": "Moove-Rider",
     "slug": "rider",
     "privacy": "public",
-    "sdkVersion": "35.0.0",
+    "sdkVersion": "36.0.0",
     "platforms": [
       "android"
     ],

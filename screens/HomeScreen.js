@@ -10,6 +10,7 @@ import {
 import ProfileRow from '../components/profile-row';
 import { Ionicons } from '@expo/vector-icons';
 import constants from '../constants';
+import agent from '../agent';
 
 function wait(timeout) {
   return new Promise(resolve => {
@@ -20,10 +21,17 @@ function wait(timeout) {
 export default function HomeScreen(props) {
 
   const [refreshing, setRefreshing] = React.useState(false);
+  const [user, setUser] = React.useState({});
+
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
-
-    wait(2000).then(() => setRefreshing(false));
+    agent.Trip.active().then(x => {
+      wait(2000).then(() => setRefreshing(false));
+    },
+    err => {
+      wait(2000).then(() => setRefreshing(false));
+    });
+    
   }, [refreshing]);
 
 
@@ -32,20 +40,32 @@ export default function HomeScreen(props) {
     props.navigation.navigate('Auth');
   };
 
+  React.useEffect(x=>{
+    AsyncStorage.getItem("user").then(x=>{
+      const user = JSON.parse(x);
+      setUser(user);
+    });
+  }, []); 
+
+  if(!user){
+    return <View>
+      <Text>Loading</Text>
+    </View>
+  }
+
   return (
-    <ScrollView
+    <ScrollView 
       contentContainerStyle={styles.container}
       refreshControl={
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
       }
       >
-      <ProfileRow style={styles.profile} profileName={"Oyesola Ogundele"} />
+      <ProfileRow style={styles.profile} profileName={user.username} />
       <View style={styles.home}>
         <Ionicons name="ios-mail-open" size={constants.AVATER_SIZE} style={styles.emptyBox} />
         <Text>No running trips at the moments</Text>
         <Text style={styles.refreshText}>Pull down to refresh</Text>
       </View>
-
     </ScrollView>
   );
 }

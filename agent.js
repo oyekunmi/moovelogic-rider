@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const http = axios.create({
-    baseURL: "https://api-cashingames.herokuapp.com/api",
+    baseURL: "https://moovelogic.herokuapp.com/api",
     // headers: {
     //   // 'Accept': 'application/json',
     //   // 'Authorization': `Bearer ${token}`,
@@ -44,15 +44,15 @@ const Auth = {
     http.post(`/auth/email/is-valid`, { email }),
 }
 
-const Profile = {
-  save: profile =>
-    http.put('/v1/profile', { profile }),
+const Trip = {
+  active: () =>
+    http.get('/trips/find/active'),
   load: () =>
     http.get('/v1/profile/me'),
 }
 
 export default {
   Auth,
-  Profile,
+  Trip,
   setToken: _token => { token = _token; },
 };

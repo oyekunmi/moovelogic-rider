@@ -22,6 +22,7 @@ export default function SignInScreen(props) {
             console.log(x);
             const token = x.data.token.access_token;
             AsyncStorage.setItem('jwt', token);
+            AsyncStorage.setItem('user', JSON.stringify(x.data.user));
             agent.setToken(token); 
             props.navigation.navigate('App');
         },
