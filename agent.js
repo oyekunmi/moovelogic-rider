@@ -1,15 +1,23 @@
 import axios from 'axios';
+import {AsyncStorage} from 'react-native';
+let token = null;
+
 
 const http = axios.create({
     baseURL: "https://moovelogic.herokuapp.com/api",
     // headers: {
-    //   // 'Accept': 'application/json',
-    //   // 'Authorization': `Bearer ${token}`,
-    //   // 'X-Requested-With': 'XMLHttpRequest'
+    //   'Accept': 'application/json',
+    //   'Authorization': `Bearer ${token}`,
+    //   'X-Requested-With': 'XMLHttpRequest'
     // },
 });
 
-let token = null;
+(async () => {
+  http.defaults.headers.common['Authorization'] = `Bearer ${await AsyncStorage.getItem("jwt")}`;
+})();
+
+console.log("headers", http.defaults.headers);
+
 
 const responseBody = res => res.json();
 
@@ -36,8 +44,8 @@ const tokenPlugin = req => {
 const Auth = {
   current: () =>
     http.get('/v1/user/me'),
-  login: (username, password) =>
-    http.post('/auth/login', { username, password }),
+  login: (phone_number, password) =>
+    http.post('/auth/login', { phone_number, password }),
   register: data =>
     http.post('/auth/register', data),
   checkValidEmail: email =>
@@ -45,14 +53,39 @@ const Auth = {
 }
 
 const Trip = {
-  active: () =>
-    http.get('/trips/find/active'),
+  active: async () => {
+     const tok = await AsyncStorage.getItem("jwt");
+    return http.get('/active-ride', { headers: {"Authorization" : `Bearer ${tok}`} }) 
+  },
+
   load: () =>
     http.get('/v1/profile/me'),
+
+  startTrip: async (tripId) => {
+    const tok = await AsyncStorage.getItem("jwt");
+    return http.post(`/start-trip/${tripId}`, { headers: {"Authorization" : `Bearer ${tok}`} });
+  },
+
+  endTrip: async (tripId) => {
+    const tok = await AsyncStorage.getItem("jwt");
+    return http.post(`/end-trip/${tripId}`, { headers: {"Authorization" : `Bearer ${tok}`} });
+  }
+}
+
+const Package = {
+  delivered: async (packageId) => {
+    const tok = await AsyncStorage.getItem("jwt");
+    return http.post(`/delivered/${packageId}`, { headers: {"Authorization" : `Bearer ${tok}`} });
+  },
+  notDelivered: async (packageId) => {
+    const tok = await AsyncStorage.getItem("jwt");
+    return http.post(`/not-delivered/${packageId}`, { headers: {"Authorization" : `Bearer ${tok}`} });
+  }
 }
 
 export default {
   Auth,
   Trip,
+  Package,
   setToken: _token => { token = _token; },
 };

@@ -23,6 +23,7 @@
     ],
     "android": {
       "package": "com.moovelogic.mooverider"
-    }
+    },
+    "description": ""
   }
 }

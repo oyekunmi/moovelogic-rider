@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform } from 'react-native';
+import { Platform, AsyncStorage } from 'react-native';
 import { createStackNavigator, createBottomTabNavigator } from 'react-navigation';
 
 import TabBarIcon from '../components/TabBarIcon';
@@ -7,6 +7,7 @@ import HomeScreen from '../screens/HomeScreen';
 import LinksScreen from '../screens/LinksScreen';
 import SettingsScreen from '../screens/SettingsScreen';
 import Colors from '../constants/Colors';
+import TripDetailScreen from '../screens/TripDetailScreen';
 
 const config = Platform.select({
   web: { headerMode: 'screen' },
@@ -35,6 +36,26 @@ HomeStack.navigationOptions = {
 };
 
 HomeStack.path = '';
+
+
+// const TripDetailStack = createStackNavigator(
+  
+//   {
+//   TripDetails: async (props) => { 
+//     const trip = await AsyncStorage.getItem("trip");
+//     <TripDetailScreen {...props} trip={JSON.parse(trip)} /> },
+//   },
+//   config
+// );
+
+// TripDetailStack.navigationOptions = {
+//   tabBarLabel: 'Trip',
+//   tabBarIcon: ({ focused }) => (
+//     <TabBarIcon focused={focused} name={Platform.OS === 'ios' ? 'ios-mail' : 'md-mail'} />
+//   ),
+// };
+
+// TripDetailStack.path = '';
 
 const LinksStack = createStackNavigator(
   {
@@ -68,11 +89,13 @@ SettingsStack.navigationOptions = {
 
 SettingsStack.path = '';
 
+
 const tabNavigator = createBottomTabNavigator(
   {
     HomeStack,
+    // TripDetailStack,
     LinksStack,
-    SettingsStack,
+    SettingsStack
   },
   {
     tabBarOptions: {

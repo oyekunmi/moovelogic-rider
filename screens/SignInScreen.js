@@ -12,30 +12,43 @@ import AppButton from '../components/UI/AppButton';
 import agent from '../agent';
 
 export default function SignInScreen(props) {
-    const [username, setUsername] = useState('');
+    const [phone_number, setPhone_Number] = useState('');
     const [password, setPassword] = useState('');
     const [authenticating, setAuthenticating] = useState(false);
 
-    _signInAsync = async () => {
+    const _signInAsync = async () => {
         setAuthenticating(true);
-        agent.Auth.login(username, password).then(x=>{
-            console.log(x);
-            const token = x.data.token.access_token;
-            AsyncStorage.setItem('jwt', token);
-            AsyncStorage.setItem('user', JSON.stringify(x.data.user));
-            agent.setToken(token); 
-            props.navigation.navigate('App');
-        },
-        err => {
-            console.log(err);
+        try {
+            const {data: {data: {user, token}, message}} = await agent.Auth.login(phone_number, password); 
             setAuthenticating(false);
-            Alert.alert("Bad credential", "Invalid login credential, kindly contact support for help on info@app.com", [{text: 'OK'}]);
-        });
+            AsyncStorage.setItem('jwt', token.access_token);
+            AsyncStorage.setItem('user', JSON.stringify(user));
+            agent.setToken(token.access_token); 
+            props.navigation.navigate('App'); 
+            return;   
+        } catch (error) {
+            setAuthenticating(false);
+            Alert.alert("Bad credential", "Invalid login credential, kindly contact support for help on info@app.com", [{text: 'OK'}]);            
+        }
+        
+        // agent.Auth.login(phone_number, password).then(x=>{
+        //     console.log(x);
+        //     const token = x.data.token.access_token;
+        //     AsyncStorage.setItem('jwt', token);
+        //     AsyncStorage.setItem('user', JSON.stringify(x.data.user));
+        //     agent.setToken(token); 
+        //     props.navigation.navigate('App');
+        // },
+        // err => {
+        //     console.log(err);
+        //     setAuthenticating(false);
+        //     Alert.alert("Bad credential", "Invalid login credential, kindly contact support for help on info@app.com", [{text: 'OK'}]);
+        // });
     };
 
-    _onChangeText = (key, value) => {
-        if (key == "username")
-            setUsername(value);
+    const _onChangeText = (key, value) => {
+        if (key == "phone_number")
+            setPhone_Number(value);
         if (key == "password")
             setPassword(value);
     }
@@ -58,10 +71,10 @@ export default function SignInScreen(props) {
 
             <View style={styles.inputContainer}>
                 <AppInput
-                    placeholder="User Name"
-                    type='username'
+                    placeholder="Phone Number"
+                    type='phone_number'
                     onChangeText={_onChangeText}
-                    value={username}
+                    value={phone_number}
                 />
                 <AppInput
                     placeholder="Password"

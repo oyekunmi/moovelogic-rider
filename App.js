@@ -38,7 +38,7 @@ async function loadResourcesAsync() {
       require('./assets/images/robot-dev.png'),
       require('./assets/images/robot-prod.png'),
     ]),
-    Font.loadAsync({
+    await Font.loadAsync({
       // This is the font that we are using for our tab bar
       ...Ionicons.font,
       // We include SpaceMono because we use it in HomeScreen.js. Feel free to

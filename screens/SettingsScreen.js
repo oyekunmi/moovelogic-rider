@@ -9,7 +9,7 @@ import { TouchableOpacity } from 'react-native-gesture-handler';
 export default function SettingsScreen(props) {
 
   
-  _signOutAsync = async () => {
+ const  _signOutAsync = async () => {
     await AsyncStorage.clear();
     props.navigation.navigate('Auth');
   };
