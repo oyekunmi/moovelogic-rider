@@ -1,25 +1,108 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {StyleSheet, ScrollView, Alert, View , Text } from 'react-native';
 import AppButton from '../components/UI/AppButton';
 import agent from "../agent";
+import * as Location from 'expo-location';
+import * as Permissions from 'expo-permissions';
 
 const TripDetailScreen = props => {
     const [tripStarted, setTripStarted] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [latitude, setLatitude] = useState(0);
+    const [longitude, setLongitude] = useState(0);
 
     const {params} = props.navigation.state;
-    console.log(params);
 
+    useEffect(() => {
+      if(tripStarted) {
+        const interval = setInterval( async () => {
+          await _getLocationAsync();
+        }, 60000);
+        return () => clearInterval(interval);
+       }
+    }, [tripStarted])
+
+    const _getLocationAsync = async () => {
+        // const { status } = await Permissions.askAsync(Permissions.LOCATION);
+        // if (status !== 'granted') {
+        //   Alert.alert("info", "Permission to access location was denied", [{text: 'Ok'}])
+        // }
+
+        const location = await Location.getCurrentPositionAsync();
+        console.log("mylocation", location);
+        setLatitude(location.coords.latitude);
+        setLongitude(location.coords.longitude);
+        console.log("ltlng", latitude, longitude);
+        await saveMyLocation(location.coords.latitude, location.coords.longitude);
+    };  
+
+
+    const saveMyLocation = async (lat, lng) => {
+      const data = {
+        trip_id: params.id,
+        latitude: lat,
+        longitude: lng
+      }
+      try {
+        const response = await agent.Trip.saveMyLocation(data);
+        console.log("res", response);
+      } catch (error) {
+        console.log("error", error);
+      }
+    }
+
+    const verifyPermissions = async () => {
+      const result = await Permissions.askAsync(Permissions.LOCATION);
+      if(result.status !== 'granted') {
+        Alert.alert('Insufficient permission', 'You need to grant location permissions to use this app', [
+          {
+            text: 'Ok', 
+            onPress: async () => {
+              await verifyPermissions();
+            }
+          },
+          {
+            text: 'No',
+            onPress: async () => {
+               console.log("cancelled pressed");
+            },
+            style: 'cancel',
+          }
+        ]);
+        return false;
+      }
+      return true;
+    }
+    
     const startTrip = async () => {
+      const { status } = await Permissions.getAsync(Permissions.LOCATION);
+      if (status !== 'granted') {
+        Alert.alert("Message", "Hey! seems like you have not allowed access to your location, you need to do that before starting this trip.", [
+          {
+            text: 'OK',
+            onPress: async () => {
+              await verifyPermissions();
+            }
+          },
+          {
+            text: 'No',
+            onPress: async () => {
+               console.log("cancelled pressed");
+            },
+            style: 'cancel',
+          }
+        ]);
+        return;
+      }
       setLoading(true);
       try {
         const started = await agent.Trip.startTrip(params.id);
-        console.log(started);
         if(started.data.success === true) {
           setTripStarted(true);
           setLoading(false);
-          Alert.alert("Success", started.data.message, [{text: 'OK'}])
+          Alert.alert("Success", started.data.message, [{text: 'OK'}]);
         }
+
       } catch (error) {
         setLoading(false);
         console.log(error);
@@ -31,7 +114,7 @@ const TripDetailScreen = props => {
       setLoading(true);
       try {
         const ended = await agent.Trip.endTrip(params.id);
-        console.log(ended);
+        console.log("ended", ended);
         if(ended.data.success === true) {
           setLoading(false);
           Alert.alert(
@@ -39,11 +122,16 @@ const TripDetailScreen = props => {
             ended.data.message,
             [
               {
-                text: 'YES', 
+                text: 'Yes', 
                 onPress: async () => {
-                  const res = await packageDelivered();
-                  if(res) {
-                    props.navigation.navigate('App');
+                  try {
+                    const res = await packageDelivered();
+                    if(res) {
+                      console.log("del", res);
+                      props.navigation.navigate('App');
+                    }
+                  } catch (error) {
+                    Alert.alert("Error", "Unable to process your request, kindly contact support for help on info@app.com", [{text: 'OK'}])
                   }
                   console.log('OK Pressed')
                 }
@@ -51,11 +139,17 @@ const TripDetailScreen = props => {
               {
                 text: 'No',
                 onPress: async () => {
-                  const res = await packageNotDelivered();
-                  if(res) {
-                    props.navigation.navigate('App');
+                  try {
+                    const res = await packageNotDelivered();
+                    if(res) {
+                      console.log("notdel", res);
+                      props.navigation.navigate('App');
+                    }
+                    console.log('Cancel Pressed')
+                  } catch (error) {
+                    Alert.alert("Error", "Unable to process your request, kindly contact support for help on info@app.com", [{text: 'OK'}])
                   }
-                  console.log('Cancel Pressed')
+                 
                 },
                 style: 'cancel',
               }
@@ -65,7 +159,7 @@ const TripDetailScreen = props => {
         }
       } catch (error) {
         setLoading(false);
-        console.log(error);
+        console.log("errorending", error);
         Alert.alert("Error", "Unable to end trip, kindly contact support for help on info@app.com", [{text: 'OK'}])
       }
     }
@@ -84,10 +178,11 @@ const TripDetailScreen = props => {
           <Text> User Address: {params.start_location || 'N/A'} </Text>
           <Text> Destination: {params.end_location} </Text>
           <Text> Payment Method: {params.payment_method} </Text>
-          <Text> Trip Cost: {params.cost_of_trip} </Text>
+          <Text> Trip Cost: {`NGN ${params.cost_of_trip}`} </Text>
           <Text> Recipient Name: {params.recipient_name} </Text>
           <Text> Recipient No: {params.recipient_phone_number} </Text>
           <Text> Who Pays: {params.who_pays} </Text>
+
 
           <View style={styles.button}>
             { !tripStarted &&
@@ -118,6 +213,7 @@ const styles = StyleSheet.create({
       container: {
         flex: 1,
         paddingTop: 15,
+        paddingLeft: 15,
         backgroundColor: '#fff',
       },
       button: {

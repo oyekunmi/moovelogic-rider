@@ -10,7 +10,7 @@ import constants from '../../constants'
 
 
 export default ({ title, onPress, isLoading }) => (
-  <TouchableOpacity onPress={onPress}>
+  <TouchableOpacity onPress={!isLoading ? onPress : null}>
     <View style={styles.button}>
       <Text style={[styles.buttonText]}>{title}</Text>
       {

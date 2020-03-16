@@ -4,7 +4,7 @@ let token = null;
 
 
 const http = axios.create({
-    baseURL: "https://moovelogic.herokuapp.com/api",
+    baseURL: "http://stg-api.moovelogic.com/api",
     // headers: {
     //   'Accept': 'application/json',
     //   'Authorization': `Bearer ${token}`,
@@ -69,6 +69,16 @@ const Trip = {
   endTrip: async (tripId) => {
     const tok = await AsyncStorage.getItem("jwt");
     return http.post(`/end-trip/${tripId}`, { headers: {"Authorization" : `Bearer ${tok}`} });
+  },
+
+  getHistory: async () => {
+    const tok = await AsyncStorage.getItem("jwt");
+    return http.get(`/trip-history`, { headers: {"Authorization" : `Bearer ${tok}`} });
+  },
+
+  saveMyLocation: async (data) => {
+    const tok = await AsyncStorage.getItem("jwt");
+    return http.post("/rider-location", data, { headers: {"Authorization" : `Bearer ${tok}`} });
   }
 }
 

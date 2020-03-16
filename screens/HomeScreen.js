@@ -6,12 +6,16 @@ import {
   Text,
   ScrollView,
   RefreshControl,
+  Alert,
 } from 'react-native';
 import ProfileRow from '../components/profile-row';
 import { Ionicons } from '@expo/vector-icons';
 import constants from '../constants';
 import agent from '../agent';
 import AppButton from '../components/UI/AppButton';
+import * as Permissions from 'expo-permissions';
+
+
 
 function wait(timeout) {
   return new Promise(resolve => {
@@ -24,7 +28,6 @@ export default function HomeScreen(props) {
   const [refreshing, setRefreshing] = React.useState(false);
   const [user, setUser] = React.useState({});
   const [trip, setTrip] = React.useState({});
-  const [interval, setInterval] = React.useState(0);
 
 
   const onRefresh = React.useCallback(() => {
@@ -36,14 +39,42 @@ export default function HomeScreen(props) {
     err => {
       console.log(err);
       wait(6000).then(() => setRefreshing(false));
-    });
-    
+    });    
   }, [refreshing]);
 
+  const verifyPermissions = async () => {
+    const result = await Permissions.askAsync(Permissions.LOCATION);
+    if(result.status !== 'granted') {
+      Alert.alert('Insufficient permission', 'You need to grant location permissions to use this app', [
+        {
+          text: 'Ok', 
+          onPress: async () => {
+            await verifyPermissions();
+          }
+        },
+        {
+          text: 'No',
+          onPress: async () => {
+             console.log("cancelled pressed");
+          },
+          style: 'cancel',
+        }
+      ]);
+      return false;
+    }
+    return true;
+  }
 
   const goToTripDetail = () => {
     props.navigation.navigate('TripDetail', trip);
   }
+
+  React.useEffect( () => {
+     async function verifyPer() {
+        await verifyPermissions();
+     }
+     verifyPer();
+  }, [])
 
   React.useEffect(x=>{
     AsyncStorage.getItem("user").then(x=>{
