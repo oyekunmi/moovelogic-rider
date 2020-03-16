@@ -20,10 +20,24 @@ export default function LinksScreen() {
   }, [])
 
 
+  const renderSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          width: "86%",
+          backgroundColor: "#CED0CE",
+          marginLeft: "4%"
+        }}
+      />
+    );
+  };
+
+
   return (
     <ScrollView style={styles.container}>
       <View >
-        <Text style={{marginBottom: 10}}>
+        <Text style={{marginBottom: 10, marginLeft: 12}}>
         Your trip history
         </Text>
         <FlatList
@@ -31,13 +45,26 @@ export default function LinksScreen() {
           showsVerticalScrollIndicator={false}
           renderItem={({item}) =>
             <View style={styles.item}>
-              <Text >{item.created_at}</Text>
-              <Text >{item.trip_status}</Text>
-              <Text >{item.start_location}</Text>
-              <Text >{item.end_location}</Text>
+              <Text>
+                <Text>Date: </Text>
+                <Text style={{fontWeight: "bold"}}>{item.created_at}</Text>
+              </Text>
+              <Text>
+                <Text>Trip Status: </Text>
+                <Text style={(item.trip_status === "ENDED") ? styles.green : styles.red}>{item.trip_status}</Text>
+              </Text>
+              <Text>
+                <Text>Pick Up Location: </Text>
+                <Text style={{fontWeight: "bold"}}>{item.start_location || 'N/A'}</Text>
+              </Text>
+              <Text>
+                <Text>Delivery Location: </Text>
+                <Text style={{fontWeight: "bold"}}>{item.end_location}</Text>
+              </Text>
             </View>
           }
           keyExtractor={item => item.id}
+          ItemSeparatorComponent = {renderSeparator}
         />
     </View>
     </ScrollView>
@@ -59,4 +86,10 @@ const styles = StyleSheet.create({
     marginVertical: 8,
     marginHorizontal: 16,
   },
+  red: {
+    color: 'red'
+  },
+  green: {
+    color: 'green'
+  }
 });

@@ -5,6 +5,7 @@ import agent from "../agent";
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
 
+
 const TripDetailScreen = props => {
     const [tripStarted, setTripStarted] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -172,17 +173,98 @@ const TripDetailScreen = props => {
       return await agent.Package.notDelivered(params.package_id);
     }
 
+    const backToHome = () => {
+      props.navigation.navigate('App');
+    }
+
     return (
       <ScrollView style={styles.container}>
+        {/* <AppButton
+          title='Home'
+          onPress={backToHome} /> */}
         <View>
-          <Text> User Address: {params.start_location || 'N/A'} </Text>
-          <Text> Destination: {params.end_location} </Text>
-          <Text> Payment Method: {params.payment_method} </Text>
-          <Text> Trip Cost: {`NGN ${params.cost_of_trip}`} </Text>
-          <Text> Recipient Name: {params.recipient_name} </Text>
-          <Text> Recipient No: {params.recipient_phone_number} </Text>
-          <Text> Who Pays: {params.who_pays} </Text>
-
+          <Text>
+            <Text>User Address: </Text>
+            <Text style={{fontWeight: "bold"}}>{params.start_location || 'N/A'} </Text>
+          </Text>
+          <View
+              style={{
+                height: 1,
+                width: "86%",
+                backgroundColor: "#CED0CE",
+                marginTop: "5%",
+                marginBottom: "5%"
+              }}
+            />
+          <Text>
+            <Text>Destination: </Text>
+            <Text style={{fontWeight: "bold"}}>{params.end_location} </Text>
+          </Text>
+          <View
+              style={{
+                height: 1,
+                width: "86%",
+                backgroundColor: "#CED0CE",
+                marginTop: "5%",
+                marginBottom: "5%"
+              }}
+            />
+          <Text>
+            <Text>Payment Method: </Text>
+            <Text style={{fontWeight: "bold"}}>{params.payment_method}</Text>
+          </Text>
+          <View
+              style={{
+                height: 1,
+                width: "86%",
+                backgroundColor: "#CED0CE",
+                marginTop: "5%",
+                marginBottom: "5%"
+              }}
+            />
+          <Text>
+            <Text>Trip Cost: </Text>
+            <Text style={{fontWeight: "bold"}}>{`NGN ${params.cost_of_trip}`}</Text>
+          </Text>
+          <View
+              style={{
+                height: 1,
+                width: "86%",
+                backgroundColor: "#CED0CE",
+                marginTop: "5%",
+                marginBottom: "5%"
+              }}
+            />
+          <Text>
+            <Text>Recipient Name: </Text>
+            <Text style={{fontWeight: "bold"}}>{params.recipient_name}</Text>
+          </Text>
+          <View
+              style={{
+                height: 1,
+                width: "86%",
+                backgroundColor: "#CED0CE",
+                marginTop: "5%",
+                marginBottom: "5%"
+              }}
+            />
+          <Text>
+            <Text>Recipient No: </Text>
+            <Text style={{fontWeight: "bold"}}>{params.recipient_phone_number}</Text>
+          </Text>
+          <View
+              style={{
+                height: 1,
+                width: "86%",
+                backgroundColor: "#CED0CE",
+                marginTop: "5%",
+                marginBottom: "5%"
+              }}
+            />
+          <Text>
+            <Text>Who Pays: </Text>
+            <Text style={{fontWeight: "bold"}}>{params.who_pays}</Text>
+          </Text>
 
           <View style={styles.button}>
             { !tripStarted &&
