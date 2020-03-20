@@ -100,7 +100,7 @@ export default function HomeScreen(props) {
       <View style={styles.home}>
         <Ionicons name="ios-mail-open" size={constants.AVATER_SIZE} style={styles.emptyBox} />
         {
-         !trip.id ? (<Text>No running trips at the moments</Text>) : (<Text>You have a trip!</Text>)
+         !trip.id ? (<Text  style={{fontSize: 20}}>No running trips at the moments</Text>) : (<Text  style={{fontSize: 20}}>You have a trip!</Text>)
         }
         {
           trip.id && <AppButton
@@ -138,5 +138,6 @@ const styles = StyleSheet.create({
   refreshText: {
     marginVertical:20,
     fontStyle: "italic",
+    fontSize: 20
   }
 });

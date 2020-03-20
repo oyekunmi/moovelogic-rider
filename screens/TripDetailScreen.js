@@ -184,7 +184,7 @@ const TripDetailScreen = props => {
           onPress={backToHome} /> */}
         <View>
           <Text>
-            <Text>User Address: </Text>
+            <Text style={{fontSize: 20}}>User Address: </Text>
             <Text style={{fontWeight: "bold"}}>{params.start_location || 'N/A'} </Text>
           </Text>
           <View
@@ -197,7 +197,7 @@ const TripDetailScreen = props => {
               }}
             />
           <Text>
-            <Text>Destination: </Text>
+            <Text style={{fontSize: 20}}>Destination: </Text>
             <Text style={{fontWeight: "bold"}}>{params.end_location} </Text>
           </Text>
           <View
@@ -210,7 +210,7 @@ const TripDetailScreen = props => {
               }}
             />
           <Text>
-            <Text>Payment Method: </Text>
+            <Text style={{fontSize: 20}}>Payment Method: </Text>
             <Text style={{fontWeight: "bold"}}>{params.payment_method}</Text>
           </Text>
           <View
@@ -223,7 +223,7 @@ const TripDetailScreen = props => {
               }}
             />
           <Text>
-            <Text>Trip Cost: </Text>
+            <Text style={{fontSize: 20}}>Trip Cost: </Text>
             <Text style={{fontWeight: "bold"}}>{`NGN ${params.cost_of_trip}`}</Text>
           </Text>
           <View
@@ -236,7 +236,7 @@ const TripDetailScreen = props => {
               }}
             />
           <Text>
-            <Text>Recipient Name: </Text>
+            <Text style={{fontSize: 20}}>Recipient Name: </Text>
             <Text style={{fontWeight: "bold"}}>{params.recipient_name}</Text>
           </Text>
           <View
@@ -249,7 +249,7 @@ const TripDetailScreen = props => {
               }}
             />
           <Text>
-            <Text>Recipient No: </Text>
+            <Text style={{fontSize: 20}}>Recipient No: </Text>
             <Text style={{fontWeight: "bold"}}>{params.recipient_phone_number}</Text>
           </Text>
           <View
@@ -262,7 +262,7 @@ const TripDetailScreen = props => {
               }}
             />
           <Text>
-            <Text>Who Pays: </Text>
+            <Text style={{fontSize: 20}}>Who Pays: </Text>
             <Text style={{fontWeight: "bold"}}>{params.who_pays}</Text>
           </Text>
 

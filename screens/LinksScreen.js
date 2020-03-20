@@ -37,29 +37,26 @@ export default function LinksScreen() {
   return (
     <ScrollView style={styles.container}>
       <View >
-        <Text style={{marginBottom: 10, marginLeft: 12}}>
-        Your trip history
-        </Text>
         <FlatList
           data={history}
           showsVerticalScrollIndicator={false}
           renderItem={({item}) =>
             <View style={styles.item}>
-              <Text>
-                <Text>Date: </Text>
-                <Text style={{fontWeight: "bold"}}>{item.created_at}</Text>
+              <Text style={{marginBottom: 10}}>
+                <Text style={{fontSize: 20}}>Date: </Text>
+                <Text style={{fontWeight: "bold", fontSize: 20}}>{item.created_at}</Text>
               </Text>
-              <Text>
-                <Text>Trip Status: </Text>
+              <Text style={{marginBottom: 10}}>
+                <Text style={{fontSize: 20}}>Trip Status: </Text>
                 <Text style={(item.trip_status === "ENDED") ? styles.green : styles.red}>{item.trip_status}</Text>
               </Text>
-              <Text>
-                <Text>Pick Up Location: </Text>
-                <Text style={{fontWeight: "bold"}}>{item.start_location || 'N/A'}</Text>
+              <Text style={{marginBottom: 10}}>
+                <Text style={{fontSize: 20}}>Pick Up Location: </Text>
+                <Text style={{fontWeight: "bold", fontSize: 20}}>{item.start_location || 'N/A'}</Text>
               </Text>
-              <Text>
-                <Text>Delivery Location: </Text>
-                <Text style={{fontWeight: "bold"}}>{item.end_location}</Text>
+              <Text style={{marginBottom: 10}}>
+                <Text style={{fontSize: 20}}>Delivery Location: </Text>
+                <Text style={{fontWeight: "bold", fontSize: 20}}>{item.end_location}</Text>
               </Text>
             </View>
           }
@@ -87,9 +84,13 @@ const styles = StyleSheet.create({
     marginHorizontal: 16,
   },
   red: {
-    color: 'red'
+    color: 'red',
+    fontWeight: 'bold',
+    fontSize: 20
   },
   green: {
-    color: 'green'
+    color: 'green',
+    fontWeight: 'bold',
+    fontSize: 20
   }
 });

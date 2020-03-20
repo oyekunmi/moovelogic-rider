@@ -28,20 +28,20 @@ export default function SettingsScreen(props) {
   
   return (
     <View style={styles.container}>
-      <Text>
-        <Text>Name: </Text>
-        <Text style={{fontWeight: 'bold'}}>{user.profile?.first_name} {user.profile?.last_name}</Text>
+      <Text style={{marginBottom: 10}}>
+        <Text style={{fontSize: 20}}>Name: </Text>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>{user.profile?.first_name} {user.profile?.last_name}</Text>
       </Text>
-      <Text>
-        <Text>Email: </Text>
-        <Text style={{fontWeight: 'bold'}}>{user.email}</Text>
+      <Text style={{marginBottom: 10}}>
+        <Text style={{fontSize: 20}}>Email: </Text>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>{user.email}</Text>
       </Text>
-      <Text>
-        <Text>Phone Number: </Text>
-        <Text style={{fontWeight: 'bold'}}>{user.phone_number}</Text>
+      <Text style={{marginBottom: 10}}>
+        <Text style={{fontSize: 20}}>Phone Number: </Text>
+        <Text style={{fontWeight: 'bold', fontSize: 20}}>{user.phone_number}</Text>
       </Text>
       <TouchableOpacity onPress={_signOutAsync}>
-        <Text style={{fontWeight: "bold", color: 'red'}}>Logout</Text>
+        <Text style={{fontWeight: "bold", fontSize: 20, color: 'red'}}>Logout</Text>
       </TouchableOpacity>
     </View>
   ) 

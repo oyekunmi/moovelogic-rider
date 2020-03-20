@@ -19,6 +19,7 @@ const styles = StyleSheet.create({
   },
   profileName: {
     marginHorizontal: 10,
+    fontSize: 20
   }
 });
 
