@@ -21,9 +21,9 @@ export default function SignInScreen(props) {
         try {
             const {data: {data: {user, token}, message}} = await agent.Auth.login(phone_number, password); 
             setAuthenticating(false);
-            AsyncStorage.setItem('jwt', token.access_token);
-            AsyncStorage.setItem('user', JSON.stringify(user));
-            agent.setToken(token.access_token); 
+            await AsyncStorage.setItem('jwt', token.access_token);
+            await AsyncStorage.setItem('user', JSON.stringify(user));
+            //agent.setToken(token.access_token); 
             props.navigation.navigate('App'); 
             return;   
         } catch (error) {

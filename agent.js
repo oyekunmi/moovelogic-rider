@@ -16,7 +16,6 @@ const http = axios.create({
   http.defaults.headers.common['Authorization'] = `Bearer ${await AsyncStorage.getItem("jwt")}`;
 })();
 
-console.log("headers", http.defaults.headers);
 
 
 const responseBody = res => res.json();
@@ -63,11 +62,13 @@ const Trip = {
 
   startTrip: async (tripId) => {
     const tok = await AsyncStorage.getItem("jwt");
+    http.defaults.headers.common['Authorization'] = `Bearer ${tok}`;
     return http.post(`/start-trip/${tripId}`, { headers: {"Authorization" : `Bearer ${tok}`} });
   },
 
   endTrip: async (tripId) => {
     const tok = await AsyncStorage.getItem("jwt");
+    http.defaults.headers.common['Authorization'] = `Bearer ${tok}`;
     return http.post(`/end-trip/${tripId}`, { headers: {"Authorization" : `Bearer ${tok}`} });
   },
 
@@ -78,7 +79,13 @@ const Trip = {
 
   saveMyLocation: async (data) => {
     const tok = await AsyncStorage.getItem("jwt");
+    http.defaults.headers.common['Authorization'] = `Bearer ${tok}`;
     return http.post("/rider-location", data, { headers: {"Authorization" : `Bearer ${tok}`} });
+  },
+  updateMyLocation: async (data) => {
+    const tok = await AsyncStorage.getItem("jwt");
+    http.defaults.headers.common['Authorization'] = `Bearer ${tok}`;
+    return http.post("/update-location", data, { headers: {"Authorization" : `Bearer ${tok}`} });
   }
 }
 

@@ -14,6 +14,10 @@ import constants from '../constants';
 import agent from '../agent';
 import AppButton from '../components/UI/AppButton';
 import * as Permissions from 'expo-permissions';
+import { Audio } from 'expo-av';
+import * as Location from 'expo-location';
+
+
 
 
 
@@ -30,17 +34,60 @@ export default function HomeScreen(props) {
   const [trip, setTrip] = React.useState({});
 
 
-  const onRefresh = React.useCallback(() => {
+
+  const onRefresh = React.useEffect(() => {
     setRefreshing(true);
     agent.Trip.active().then(x => {
       setTrip(x.data.data);
-      wait(6000).then(() => setRefreshing(false));
+      playSound();
+      wait(60000).then(() => setRefreshing(false));
     },
     err => {
       console.log(err);
-      wait(6000).then(() => setRefreshing(false));
+      wait(60000).then(() => setRefreshing(false));
     });    
   }, [refreshing]);
+
+  React.useEffect(() => {
+      const interval = setInterval( async () => {
+        await updateMyLocation();
+      }, 300000);
+      return () => {
+        clearInterval(interval);
+      }
+  }, [])
+
+  const playSound = async () => {
+    const soundObject = new Audio.Sound();
+    try {
+      await soundObject.loadAsync(require('../assets/sounds/sharp.mp3'));
+      await soundObject.playAsync();
+      // Your sound is playing!
+    } catch (error) {
+      // An error occurred!
+    }
+  }
+
+  const updateMyLocation = async (lat, lng) => {
+    let options = {
+      enableHighAccuracy: true,
+      timeout: 30000,
+      maximumAge: 0
+    };
+   Location.watchPositionAsync(options, async (res, err) => {
+       console.log("ress", res);
+        const data = {
+          latitude: res.coords.latitude,
+          longitude: res.coords.longitude
+        }
+        try {
+          const response = await agent.Trip.updateMyLocation(data);
+          console.log("resup", response);
+        } catch (error) {
+          console.log("errorup", error);
+        }
+    })
+  }
 
   const verifyPermissions = async () => {
     const result = await Permissions.askAsync(Permissions.LOCATION);
@@ -76,7 +123,7 @@ export default function HomeScreen(props) {
      verifyPer();
   }, [])
 
-  React.useEffect(x=>{
+  React.useEffect(x=> {
     AsyncStorage.getItem("user").then(x=>{
       const user = JSON.parse(x);
       setUser(user);
@@ -100,7 +147,7 @@ export default function HomeScreen(props) {
       <View style={styles.home}>
         <Ionicons name="ios-mail-open" size={constants.AVATER_SIZE} style={styles.emptyBox} />
         {
-         !trip.id ? (<Text  style={{fontSize: 20}}>No running trips at the moments</Text>) : (<Text  style={{fontSize: 20}}>You have a trip!</Text>)
+         !trip.id ? (<Text style={{fontSize: 15}}>No running trips at the moments</Text>) : (<Text style={{fontSize: 15}}>You have a trip!</Text>)
         }
         {
           trip.id && <AppButton
@@ -116,6 +163,8 @@ export default function HomeScreen(props) {
 HomeScreen.navigationOptions = {
   header: null,
 };
+
+
 
 const styles = StyleSheet.create({
   container: {
@@ -138,6 +187,6 @@ const styles = StyleSheet.create({
   refreshText: {
     marginVertical:20,
     fontStyle: "italic",
-    fontSize: 20
+    fontSize: 15
   }
 });

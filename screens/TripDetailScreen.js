@@ -4,6 +4,9 @@ import AppButton from '../components/UI/AppButton';
 import agent from "../agent";
 import * as Location from 'expo-location';
 import * as Permissions from 'expo-permissions';
+import { locationService } from './../service/locationService';
+
+
 
 
 const TripDetailScreen = props => {
@@ -15,27 +18,46 @@ const TripDetailScreen = props => {
     const {params} = props.navigation.state;
 
     useEffect(() => {
+      locationService.subscribe(onLocationUpdate);
       if(tripStarted) {
         const interval = setInterval( async () => {
           await _getLocationAsync();
         }, 60000);
-        return () => clearInterval(interval);
+        return () => {
+          locationService.unsubscribe(onLocationUpdate);
+          clearInterval(interval);
+        }
        }
     }, [tripStarted])
 
-    const _getLocationAsync = async () => {
-        // const { status } = await Permissions.askAsync(Permissions.LOCATION);
-        // if (status !== 'granted') {
-        //   Alert.alert("info", "Permission to access location was denied", [{text: 'Ok'}])
-        // }
 
-        const location = await Location.getCurrentPositionAsync();
-        console.log("mylocation", location);
-        setLatitude(location.coords.latitude);
-        setLongitude(location.coords.longitude);
-        console.log("ltlng", latitude, longitude);
-        await saveMyLocation(location.coords.latitude, location.coords.longitude);
+    const onLocationUpdate = async ({ latitude, longitude }) => {
+      setLatitude(latitude);
+      setLongitude(longitude);
+      await saveMyLocation(latitude, longitude);
+      console.log("called saved");
+    }
+
+    const _getLocationAsync = async () => {
+       Location.startLocationUpdatesAsync("my-loc", {
+        accuracy: Location.Accuracy.High,
+        timeInterval: 10000,
+        }); 
     };  
+
+  //   const _getLocationAsync = async () => {
+  //     // const { status } = await Permissions.askAsync(Permissions.LOCATION);
+  //     // if (status !== 'granted') {
+  //     //   Alert.alert("info", "Permission to access location was denied", [{text: 'Ok'}])
+  //     // }
+
+  //     const location = await Location.getCurrentPositionAsync();
+  //     console.log("mylocation", location);
+  //     setLatitude(location.coords.latitude);
+  //     setLongitude(location.coords.longitude);
+  //     console.log("ltlng", latitude, longitude);
+  //     await saveMyLocation(location.coords.latitude, location.coords.longitude);
+  // };  
 
 
     const saveMyLocation = async (lat, lng) => {
@@ -98,6 +120,7 @@ const TripDetailScreen = props => {
       setLoading(true);
       try {
         const started = await agent.Trip.startTrip(params.id);
+        console.log(started);
         if(started.data.success === true) {
           setTripStarted(true);
           setLoading(false);
@@ -106,7 +129,7 @@ const TripDetailScreen = props => {
 
       } catch (error) {
         setLoading(false);
-        console.log(error);
+        console.log("tripstarterror", error);
         Alert.alert("Error", "Unable to start trip, kindly contact support for help on info@app.com", [{text: 'OK'}])
       }
     }
@@ -157,10 +180,11 @@ const TripDetailScreen = props => {
             ],
             {cancelable: false},
           );
+          Location.stopLocationUpdatesAsync("my-loc");
         }
       } catch (error) {
         setLoading(false);
-        console.log("errorending", error);
+        console.log("tripstarterror", error);
         Alert.alert("Error", "Unable to end trip, kindly contact support for help on info@app.com", [{text: 'OK'}])
       }
     }
@@ -173,9 +197,9 @@ const TripDetailScreen = props => {
       return await agent.Package.notDelivered(params.package_id);
     }
 
-    const backToHome = () => {
-      props.navigation.navigate('App');
-    }
+    // const backToHome = () => {
+    //   props.navigation.navigate('App');
+    // }
 
     return (
       <ScrollView style={styles.container}>
