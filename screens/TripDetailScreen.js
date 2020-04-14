@@ -18,17 +18,9 @@ const TripDetailScreen = props => {
     const {params} = props.navigation.state;
 
     useEffect(() => {
-      locationService.subscribe(onLocationUpdate);
-      if(tripStarted) {
-        const interval = setInterval( async () => {
-          await _getLocationAsync();
-        }, 60000);
-        return () => {
-          locationService.unsubscribe(onLocationUpdate);
-          clearInterval(interval);
-        }
-       }
-    }, [tripStarted])
+       locationService.subscribe(onLocationUpdate);
+       return () => locationService.unsubscribe(onLocationUpdate);      
+    }, [])
 
 
     const onLocationUpdate = async ({ latitude, longitude }) => {
@@ -42,6 +34,10 @@ const TripDetailScreen = props => {
        Location.startLocationUpdatesAsync("my-loc", {
         accuracy: Location.Accuracy.High,
         timeInterval: 10000,
+        foregroundService: {
+          notificationTitle: 'Your current location',
+          notificationBody: 'App running in the background'
+          },
         }); 
     };  
 
@@ -125,6 +121,7 @@ const TripDetailScreen = props => {
           setTripStarted(true);
           setLoading(false);
           Alert.alert("Success", started.data.message, [{text: 'OK'}]);
+          await _getLocationAsync();
         }
 
       } catch (error) {

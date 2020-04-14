@@ -6,6 +6,8 @@ import { Platform, StatusBar, StyleSheet, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import * as TaskManager from 'expo-task-manager';
 import { locationService } from './service/locationService';
+import { updateLocationService } from './service/updateLocationService';
+
 
 
 
@@ -79,6 +81,20 @@ TaskManager.defineTask("my-loc", ({ data: { locations }, error }) => {
   })
 });
 
+
+TaskManager.defineTask("update-loc", ({ data: { locations }, error }) => {
+  if (error) {
+    // check `error.message` for more details.
+    console.log(error);
+    return;
+  }
+  console.log('new updated locations', locations);
+  const { latitude, longitude } = locations[0].coords;
+  updateLocationService.setLocation({
+    latitude,
+    longitude
+  })
+});
 
 
 const styles = StyleSheet.create({

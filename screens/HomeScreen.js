@@ -16,9 +16,7 @@ import AppButton from '../components/UI/AppButton';
 import * as Permissions from 'expo-permissions';
 import { Audio } from 'expo-av';
 import * as Location from 'expo-location';
-
-
-
+import { updateLocationService } from './../service/updateLocationService';
 
 
 function wait(timeout) {
@@ -40,21 +38,20 @@ export default function HomeScreen(props) {
     agent.Trip.active().then(x => {
       setTrip(x.data.data);
       playSound();
+      setRefreshing(false);
       wait(60000).then(() => setRefreshing(false));
     },
     err => {
       console.log(err);
+      setRefreshing(false);
       wait(60000).then(() => setRefreshing(false));
-    });    
+    });   
   }, [refreshing]);
 
   React.useEffect(() => {
-      const interval = setInterval( async () => {
-        await updateMyLocation();
-      }, 300000);
-      return () => {
-        clearInterval(interval);
-      }
+      updateLocationService.subscribe(onLocationUpdate);
+      getUpdatedLocationAsync();
+      return () => updateLocationService.unsubscribe(onLocationUpdate);
   }, [])
 
   const playSound = async () => {
@@ -68,25 +65,33 @@ export default function HomeScreen(props) {
     }
   }
 
-  const updateMyLocation = async (lat, lng) => {
-    let options = {
-      enableHighAccuracy: true,
-      timeout: 30000,
-      maximumAge: 0
-    };
-   Location.watchPositionAsync(options, async (res, err) => {
-       console.log("ress", res);
-        const data = {
-          latitude: res.coords.latitude,
-          longitude: res.coords.longitude
-        }
-        try {
-          const response = await agent.Trip.updateMyLocation(data);
-          console.log("resup", response);
-        } catch (error) {
-          console.log("errorup", error);
-        }
-    })
+  const onLocationUpdate = async ({ latitude, longitude }) => {
+    await updateLocation(latitude, longitude);
+    console.log("updated called saved");
+  }
+
+  const updateLocation = async (lat, lng) => {
+    const data = {
+      latitude: lat,
+      longitude: lng
+    }
+    try {
+      const response = await agent.Trip.updateMyLocation(data);
+      console.log("resup", response);
+    } catch (error) {
+      console.log("errorup", error);
+    }
+  }
+
+  const getUpdatedLocationAsync = async () => {
+    Location.startLocationUpdatesAsync("update-loc", {
+      accuracy: Location.Accuracy.High,
+      timeInterval: 10000,
+      foregroundService: {
+        notificationTitle: 'Updating current location',
+        notificationBody: 'App running in the background'
+        },
+      }); 
   }
 
   const verifyPermissions = async () => {
