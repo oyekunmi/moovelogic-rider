@@ -19,6 +19,9 @@ import * as Location from 'expo-location';
 import { updateLocationService } from './../service/updateLocationService';
 
 
+const soundObject = new Audio.Sound();
+
+
 function wait(timeout) {
   return new Promise(resolve => {
      setInterval(resolve, timeout);
@@ -32,36 +35,63 @@ export default function HomeScreen(props) {
   const [trip, setTrip] = React.useState({});
 
 
+  React.useEffect(() => {
+      const interval = setInterval(() => {
+          getTrips();
+      }, 60000)
+      return () => clearInterval(interval);
+  }, []);
 
-  const onRefresh = React.useEffect(() => {
-    setRefreshing(true);
-    agent.Trip.active().then(x => {
-      setTrip(x.data.data);
-      playSound();
-      setRefreshing(false);
-      wait(60000).then(() => setRefreshing(false));
-    },
-    err => {
-      console.log(err);
-      setRefreshing(false);
-      wait(60000).then(() => setRefreshing(false));
-    });   
-  }, [refreshing]);
+  React.useEffect(() => {
+    Audio.setAudioModeAsync({
+      staysActiveInBackground: true,
+      allowsRecordingIOS: false,
+      interruptionModeIOS: Audio.INTERRUPTION_MODE_IOS_DO_NOT_MIX,
+      playsInSilentModeIOS: true,
+      shouldDuckAndroid: true,
+      interruptionModeAndroid: Audio.INTERRUPTION_MODE_ANDROID_DO_NOT_MIX,
+      playThroughEarpieceAndroid: true
+    });
+    getTrips();
+  }, [])
+
+  const getTrips = () => {
+      setRefreshing(true);
+      agent.Trip.active().then(x => {
+        setRefreshing(false);
+        setTrip(x.data.data);
+        playSound();
+      }).catch( err => {
+          setRefreshing(false);
+          console.log("errtrip", err);
+      });  
+  }
 
   React.useEffect(() => {
       updateLocationService.subscribe(onLocationUpdate);
       getUpdatedLocationAsync();
-      return () => updateLocationService.unsubscribe(onLocationUpdate);
+      return () => {
+        updateLocationService.unsubscribe(onLocationUpdate);
+        stopSound();
+      };
   }, [])
 
   const playSound = async () => {
-    const soundObject = new Audio.Sound();
     try {
       await soundObject.loadAsync(require('../assets/sounds/sharp.mp3'));
       await soundObject.playAsync();
       // Your sound is playing!
     } catch (error) {
       // An error occurred!
+      console.log("playerror", error);
+    }
+  }
+
+  const stopSound = async () => {
+    try {
+      await soundObject.stopAsync(); 
+    } catch (error) {
+      console.log("stoperror", error);
     }
   }
 
@@ -145,7 +175,7 @@ export default function HomeScreen(props) {
     <ScrollView 
       contentContainerStyle={styles.container}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        <RefreshControl refreshing={refreshing} onRefresh={getTrips} />
       }
       >
       <ProfileRow style={styles.profile} profileName={user.email} />

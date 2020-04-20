@@ -24,6 +24,15 @@
     "android": {
       "package": "com.moovelogic.mooverider"
     },
+    "ios": {
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio",
+          "location",
+          "fetch"
+        ]
+      }
+    },
     "description": ""
   }
 }

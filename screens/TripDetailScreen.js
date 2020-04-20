@@ -12,8 +12,6 @@ import { locationService } from './../service/locationService';
 const TripDetailScreen = props => {
     const [tripStarted, setTripStarted] = useState(false);
     const [loading, setLoading] = useState(false);
-    const [latitude, setLatitude] = useState(0);
-    const [longitude, setLongitude] = useState(0);
 
     const {params} = props.navigation.state;
 
@@ -24,8 +22,6 @@ const TripDetailScreen = props => {
 
 
     const onLocationUpdate = async ({ latitude, longitude }) => {
-      setLatitude(latitude);
-      setLongitude(longitude);
       await saveMyLocation(latitude, longitude);
       console.log("called saved");
     }
@@ -40,21 +36,7 @@ const TripDetailScreen = props => {
           },
         }); 
     };  
-
-  //   const _getLocationAsync = async () => {
-  //     // const { status } = await Permissions.askAsync(Permissions.LOCATION);
-  //     // if (status !== 'granted') {
-  //     //   Alert.alert("info", "Permission to access location was denied", [{text: 'Ok'}])
-  //     // }
-
-  //     const location = await Location.getCurrentPositionAsync();
-  //     console.log("mylocation", location);
-  //     setLatitude(location.coords.latitude);
-  //     setLongitude(location.coords.longitude);
-  //     console.log("ltlng", latitude, longitude);
-  //     await saveMyLocation(location.coords.latitude, location.coords.longitude);
-  // };  
-
+ 
 
     const saveMyLocation = async (lat, lng) => {
       const data = {
@@ -205,7 +187,7 @@ const TripDetailScreen = props => {
           onPress={backToHome} /> */}
         <View>
           <Text>
-            <Text style={{fontSize: 20}}>User Address: </Text>
+            <Text style={{fontSize: 20}}>Pickup Address: </Text>
             <Text style={{fontWeight: "bold"}}>{params.start_location || 'N/A'} </Text>
           </Text>
           <View
@@ -218,7 +200,7 @@ const TripDetailScreen = props => {
               }}
             />
           <Text>
-            <Text style={{fontSize: 20}}>Destination: </Text>
+            <Text style={{fontSize: 20}}>Destination Address: </Text>
             <Text style={{fontWeight: "bold"}}>{params.end_location} </Text>
           </Text>
           <View

@@ -30,7 +30,8 @@
     "react-native-web": "^0.11.7",
     "react-navigation": "^3.12.0",
     "expo-av": "~8.0.0",
-    "expo-task-manager": "~8.0.0"
+    "expo-task-manager": "~8.0.0",
+    "expo-background-fetch": "~8.0.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^8.0.0",

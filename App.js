@@ -7,12 +7,12 @@ import { Ionicons } from '@expo/vector-icons';
 import * as TaskManager from 'expo-task-manager';
 import { locationService } from './service/locationService';
 import { updateLocationService } from './service/updateLocationService';
-
-
-
-
-
+import agent from './agent';
 import AppNavigator from './navigation/AppNavigator';
+import { Audio } from 'expo-av';
+import * as BackgroundFetch from 'expo-background-fetch';
+
+
 
 export default function App(props) {
   
@@ -95,6 +95,38 @@ TaskManager.defineTask("update-loc", ({ data: { locations }, error }) => {
     longitude
   })
 });
+
+async function myTask() {
+  try {
+    // fetch data here...
+    const backendData = await agent.Trip.active();
+    console.log("myTask() ", backendData);
+    const soundObject = new Audio.Sound();
+    await soundObject.loadAsync(require('./assets/sounds/sharp.mp3'));
+    await soundObject.playAsync();
+    return backendData
+      ? BackgroundFetch.Result.NewData
+      : BackgroundFetch.Result.NoData;
+  } catch (err) {
+    return BackgroundFetch.Result.Failed;
+  }
+}
+
+async function initBackgroundFetch(taskName, taskFn, interval = 60 * 15) {
+  try {
+    if (!TaskManager.isTaskDefined(taskName)) {
+    TaskManager.defineTask(taskName, taskFn);
+    }
+    const options = {
+    minimumInterval: interval // in seconds
+    };
+    await BackgroundFetch.registerTaskAsync(taskName, options);
+  } catch (err) {
+    console.log("registerTaskAsync() failed:", err);
+  }
+}
+
+initBackgroundFetch('myTaskName', myTask, 5);
 
 
 const styles = StyleSheet.create({
